@@ -1,4 +1,4 @@
-## Pasos Navigation Drawer
+# Navigation Drawer
 
 - Ir a res/layout/content_main.xml
 	- android:id="@+id/contenido"
@@ -37,7 +37,7 @@ return v;
 ## res/drawable/side_nav_bar.xml
 - Es aquí donde se cambia el color de fondo de la barra lateral
 	
-## Pasos para un item personalizado en una lista
+# Layout personalizado para un item de un listView
 - Vamos a crear una clase Cliente con nombre, edad y ciudad (Generar constructor, getter y setter)
 - En res/layout crear un nuevo EmptyActivity. Le llamamos ClienteItem
 	- En él, diseñamos un item de un cliente (Por ejemplo 3 TextView hacia abajo)
