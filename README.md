@@ -80,7 +80,7 @@ return v;
 			return view;
 		}
 		```
-## XML res/layout/fragment_listar.xml
+## Clase ListarFragment.java
 - Método onCreateView()
 ```
 View v = inflater.inflate(R.layout.fragment_listar, container, false);
