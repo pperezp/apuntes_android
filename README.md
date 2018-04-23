@@ -21,6 +21,7 @@
 ```
 View v = inflater.inflate(R.layout.fragment_crear, container, false);
 final Context c = v.getContext();
+Button btnGuardar = (Button) v.findViewById(R.id.btnGuardar);
 btnGuardar.setOnClickListener(new View.OnClickListener() {
 	@Override
 		public void onClick(View view) {
