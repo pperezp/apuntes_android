@@ -11,14 +11,14 @@
 	- Añadir FragmentManager fm = getSupportFragmentManager();
 	- Generar un switch case según corresponda (Si se crearón 2 navs, se deben 		generar dos cases.)
 	- En cada case:
-	```
+	```java
 	Fragmento f = new Fragmento();
 	fm.beginTransaction().replace(R.id.contenido, cf).commit();
 	```
 ## Procesar un componente (botón) en un fragment
 - Supongamos que el botón se llame btnGuardar
 - En el método de onCreateView() del fragment:
-```
+```java
 View v = inflater.inflate(R.layout.fragment_crear, container, false);
 final Context c = v.getContext();
 Button btnGuardar = (Button) v.findViewById(R.id.btnGuardar);
@@ -47,7 +47,7 @@ return v;
 - Ahora debemos crear un adapter personalizado
 	- Creamos una clase llamada ClienteAdapter
 		- Declaramos dos Atributos
-		```
+		```java
 		private Context context;
 		private List<Cliente> clientes;
 		```
@@ -55,7 +55,7 @@ return v;
 		- Colocamos extends BaseAdapter
 		- Implementamos todos los métodos con la ayuda del IDE.
 		- Método getView():
-		```
+		```java
 		@Override
 		public View getView(int i, View view, ViewGroup viewGroup) {
 			/*Acá cargo el layout del item cliente*/
@@ -83,7 +83,7 @@ return v;
 		```
 ## Clase ListarFragment.java
 - Método onCreateView()
-```
+```java
 View v = inflater.inflate(R.layout.fragment_listar, container, false);
 ListView lvClientes = (ListView)v.findViewById(R.id.listaNombres);
 
@@ -100,4 +100,149 @@ lvClientes.setAdapter(new ClienteAdapter(v.getContext(), clientes));
 
 return v;
 ```
+# Conexión a SQLite
+## Página Oficial
+https://www.sqlite.org/index.html
+## Documentación oficial
+https://www.sqlite.org/docs.html
+## Sintaxis oficial
+https://www.sqlite.org/lang.html
+## Tipos de datos oficial
+https://www.sqlite.org/datatype3.html
 
+## Dar permisos en AndroidManifest.xml
+```xml
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+```
+
+## Crear clase BD.java
+Esta clase se encargará de crear la base de datos si es que esta no existe. En el caso siguiente, se crearán 3 tablas en base de datos. Es necesario que esta clase herede de la clase SQLiteOpenHelper.
+
+```java
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class BD extends SQLiteOpenHelper{
+
+    private String tCliente =
+		"CREATE TABLE cliente("+
+			"id INTEGER PRIMARY KEY AUTOINCREMENT,"+
+			"nombre TEXT," +
+			"sector TEXT," +
+			"direccion TEXT," +
+			"deuda INTEGER"+
+		")";
+
+    private String tMovimiento =
+		"CREATE TABLE movimiento("+
+			"id INTEGER PRIMARY KEY AUTOINCREMENT,"+
+			"fecha TEXT,"+ // TEXT as ISO8601 strings ("YYYY-MM-DD HH:MM:SS.SSS").
+			"detalle TEXT,"+
+			"saldo INTEGER,"+
+			"cliente INTEGER," +
+			"FOREIGN KEY(cliente) REFERENCES cliente(id)"+
+		")";
+
+	/*
+	https://stackoverflow.com/questions/11643294/what-is-the-use-of-sqlitedatabase-cursorfactory-in-android?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+	*/
+	
+    public BD(Context context, String name, CursorFactory factory, int version) {
+        super(context, name, factory, version);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL(tCliente);
+        db.execSQL(tMovimiento);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		/*No implementado*/
+    }
+
+}
+```
+## Clase Data.java
+Esta clase es la intermediaria entre el lenguaje de programación y el motor de datos SQLite. 
+
+### Imports necesarios
+```java
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
+```
+
+### Atributos
+```java
+private Context contexto;
+private BD conexion;
+private SQLiteDatabase db;
+private Cursor cursor;
+private final String RUTA_BD =
+            Environment.getExternalStorageDirectory().
+                    getPath()+"/proyecto/nombre_bd.sqlite";
+```
+
+### Constructor
+```java
+public DAO(Context contexto) {
+	this.contexto = contexto;
+}
+```
+### Método para inserción de datos en la base de datos
+```java
+public void crearCliente(Cliente c){
+	conexion = new BD(contexto, RUTA_BD, null, 1);
+    db = conexion.getWritableDatabase();
+
+    String insert = "INSERT INTO cliente VALUES(null, '"+c.getNombre()+"', '"+c.getSector()+"', '"+c.getDireccion()+"', '"+c.getDeuda()+"')";
+    Log.v("INSERT CLIENTE", insert);
+    db.execSQL(insert);
+
+    db.close();
+}
+```
+
+### Método para obtener una lista de objetos
+```java
+public List<Cliente> getClientes(){
+	List<Cliente> lista = new ArrayList<>();
+	Cliente c = null;
+
+	conexion = new BD(contexto, RUTA_BD, null, 1);
+	db = conexion.getWritableDatabase();
+
+	String select = "SELECT * FROM cliente";
+
+	cursor = db.rawQuery(select, null);
+
+	if(cursor.moveToFirst()){
+		do{
+			c = new Cliente();
+
+			c.setId(cursor.getInt(0));
+			c.setNombre(cursor.getString(1));
+			c.setSector(cursor.getString(2));
+			c.setDireccion(cursor.getString(3));
+			c.setDeuda(cursor.getInt(4));
+
+			lista.add(c);
+		}while(cursor.moveToNext());
+	}
+
+	db.close();
+
+	return lista;
+
+}
+```
