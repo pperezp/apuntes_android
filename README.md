@@ -195,7 +195,7 @@ private final String RUTA_BD =
 
 ### Constructor
 ```java
-public DAO(Context contexto) {
+public Data(Context contexto) {
 	this.contexto = contexto;
 }
 ```
