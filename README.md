@@ -116,6 +116,12 @@ https://www.sqlite.org/datatype3.html
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 ```
 
+## Modificar build.gradle (Module:app)
+Acá debes cambiar el targetDskVersion a tu versión. En mi caso es 5.0 (api 21)
+```json	
+targetSdkVersion 21
+```
+
 ## Crear clase BD.java
 Esta clase se encargará de crear la base de datos si es que esta no existe. En el caso siguiente, se crearán 3 tablas en base de datos. Es necesario que esta clase herede de la clase SQLiteOpenHelper.
 
