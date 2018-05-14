@@ -116,8 +116,8 @@ https://www.sqlite.org/datatype3.html
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 ```
 
-## Modificar build.gradle (Module:app)
-Acá debes cambiar el targetDskVersion a tu versión. En mi caso es 5.0 (api 21)
+## Modificar build.gradle (Module:app) en Gradle Scripts
+Acá debes cambiar el targetSdkVersion a tu versión. En mi caso es 5.0 (api 21)
 ```json	
 targetSdkVersion 21
 ```
