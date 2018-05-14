@@ -173,6 +173,10 @@ public class BD extends SQLiteOpenHelper{
 
 }
 ```
+
+## Clase Cliente.java
+Crear una clase Cliente que tenga los atributos requeridos.
+
 ## Clase Data.java
 Esta clase es la intermediaria entre el lenguaje de programación y el motor de datos SQLite. 
 
