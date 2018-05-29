@@ -325,3 +325,12 @@ public void onRequestPermissionsResult(int requestCode, String permissions[], in
 	}
 }
 ```
+
+## Listado de todos los permisos (desde java)
+```java
+StringBuilder sb = new StringBuilder(" \n");
+final Field[] manifestFields = Manifest.permission.class.getDeclaredFields();
+for (final Field field : manifestFields) {
+    System.out.println(field.getName());
+}
+```
