@@ -258,45 +258,69 @@ public List<Cliente> getClientes(){
 ```
 
 ## Solicitud de permisos en tiempo de ejecución
-### En este caso es en google map API
+### Añadir en AndroidManifest
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"></uses-permission>
+<uses-permission android:name="android.permission.WRITE_CONTACTS"></uses-permission>
+<uses-permission android:name="android.permission.CAMERA"></uses-permission>
+<uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
+```
+
+### Programación de un botón
 ```java
-@Override
-public void onMapReady(GoogleMap googleMap) {
-	mMap = googleMap;
+public void btnProcesar_onClick(View v){
+	int PER_GRAN = PackageManager.PERMISSION_GRANTED;
 
-	if (ActivityCompat.checkSelfPermission(this,
-			ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-			ActivityCompat.checkSelfPermission(this,
-				Manifest.permission.ACCESS_COARSE_LOCATION) !=
-				PackageManager.PERMISSION_GRANTED) {
-		// TODO: Consider calling
-		//    ActivityCompat#requestPermissions
-		// here to request the missing permissions, and then overriding
-		//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-		//                                          int[] grantResults)
-		// to handle the case where the user grants the permission. See the documentation
-		// for ActivityCompat#requestPermissions for more details.
-		
-		/*Ese número 1 es el requestCode. Se utiliza en el método onRequestPermissionsResult*/
-		ActivityCompat.requestPermissions(this,new String[]{ACCESS_FINE_LOCATION}, 1);
-		return;
+	int WC_PER = ActivityCompat.checkSelfPermission(
+		this,
+		Manifest.permission.WRITE_CONTACTS
+	);
+
+	int GPS_PER = ActivityCompat.checkSelfPermission(
+		this,
+		Manifest.permission.ACCESS_FINE_LOCATION
+	);
+
+	int CAM_PER = ActivityCompat.checkSelfPermission(
+		this,
+		Manifest.permission.CAMERA
+	);
+
+	int NS_PER = ActivityCompat.checkSelfPermission(
+		this,
+		Manifest.permission.CALL_PHONE
+	);
+
+	if(
+		WC_PER != PER_GRAN ||
+		GPS_PER != PER_GRAN ||
+		CAM_PER != PER_GRAN ||
+		NS_PER != PER_GRAN
+	){
+		ActivityCompat.requestPermissions(
+			this,
+			new String[]{
+				Manifest.permission.WRITE_CONTACTS,
+				Manifest.permission.ACCESS_FINE_LOCATION,
+				Manifest.permission.CAMERA,
+				Manifest.permission.CALL_PHONE
+			},
+			1
+		);
 	}
-	mMap.setMyLocationEnabled(true);
-
 }
 
 @Override
-public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-	if (requestCode == 1) {
-		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-			Toast.makeText(MapsActivity.this, "Permiso OK!", Toast.LENGTH_SHORT).show();
-			if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-				return;
+public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults){
+	if(requestCode == 1){
+		int i = 0;
+		for (int gr : grantResults) {
+			if(gr == PackageManager.PERMISSION_GRANTED){
+				Log.v("PERMISOS("+permissions[i]+")","SI");
+			}else{
+				Log.v("PERMISOS("+permissions[i]+")","NO");
 			}
-			mMap.setMyLocationEnabled(true);
-		}else{
-			Toast.makeText(MapsActivity.this, "Permiso denegado!", Toast.LENGTH_SHORT).show();
+			i++;
 		}
 	}
 }
