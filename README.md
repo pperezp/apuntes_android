@@ -256,3 +256,48 @@ public List<Cliente> getClientes(){
 
 }
 ```
+
+## Solicitud de permisos en tiempo de ejecución
+### En este caso es en google map API
+```java
+@Override
+public void onMapReady(GoogleMap googleMap) {
+	mMap = googleMap;
+
+	if (ActivityCompat.checkSelfPermission(this,
+			ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+			ActivityCompat.checkSelfPermission(this,
+				Manifest.permission.ACCESS_COARSE_LOCATION) !=
+				PackageManager.PERMISSION_GRANTED) {
+		// TODO: Consider calling
+		//    ActivityCompat#requestPermissions
+		// here to request the missing permissions, and then overriding
+		//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+		//                                          int[] grantResults)
+		// to handle the case where the user grants the permission. See the documentation
+		// for ActivityCompat#requestPermissions for more details.
+		
+		/*Ese número 1 es el requestCode. Se utiliza en el método onRequestPermissionsResult*/
+		ActivityCompat.requestPermissions(this,new String[]{ACCESS_FINE_LOCATION}, 1);
+		return;
+	}
+	mMap.setMyLocationEnabled(true);
+
+}
+
+@Override
+public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+	if (requestCode == 1) {
+		if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+			Toast.makeText(MapsActivity.this, "Permiso OK!", Toast.LENGTH_SHORT).show();
+			if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+				return;
+			}
+			mMap.setMyLocationEnabled(true);
+		}else{
+			Toast.makeText(MapsActivity.this, "Permiso denegado!", Toast.LENGTH_SHORT).show();
+		}
+	}
+}
+```
